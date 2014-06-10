@@ -6,6 +6,7 @@ var src = [
     // 'utils'
     'src/utils.js',
 
+
     // 'aes' (depends on 'common', 'utils')
     'src/aes/aes.asm.js', 'src/aes/aes.js',
 
@@ -32,13 +33,13 @@ var src = [
 
     // 'exports-sha256' (depends on 'sha256')
     'src/sha256/exports.js',
-/*
+
     // 'sha512' (depends on 'common', 'utils', off by default)
     'src/sha512/sha512.asm.js', 'src/sha512/sha512.js',
 
     // 'exports-sha256' (depends on 'sha512', off by default)
     'src/sha512/exports.js',
-*/
+
     // 'hmac' (depends on 'common', 'utils')
     'src/hmac/hmac.js',
 
@@ -85,6 +86,9 @@ var src = [
     'src/bignum/exports.js',
 
     // 'rsa' (depends on 'bn', 'rng')
+    'src/rsa/rsa.js', 'src/rsa/genkey.js',
+
+    // 'rsa_raw' (depends on 'bn', 'rng', 'asn1)
     'src/rsa/rsa.js', 'src/rsa/genkey.js',
 
     // 'rsa-pkcs1' (depends on 'rsa')
@@ -156,7 +160,7 @@ module.exports = function(grunt) {
                     mangle: false,
                     compress: false,
                     beautify: true,
-                    sourceMap: 'asmcrypto.js.map',
+//                    sourceMap: 'asmcrypto.js.map',
                     wrap: 'asmCrypto'
                 },
                 files: {
