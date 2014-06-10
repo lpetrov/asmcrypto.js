@@ -12,9 +12,12 @@ function rsa_generate_key ( bitlen, e ) {
     return key;
 }
 
+function RSA() {};
+
 exports.RSA = {
     generateKey: rsa_generate_key
 };
+
 
 /**
  * RSA-OAEP-SHA1 exports

@@ -1,4 +1,4 @@
-function RSA ( options ) {
+function RSA_RAW ( options ) {
     options = options || {};
 
     this.key = null;
@@ -7,7 +7,7 @@ function RSA ( options ) {
     this.reset(options);
 }
 
-function RSA_reset ( options ) {
+function RSA_RAW_reset ( options ) {
     options = options || {};
 
     this.result = null;
@@ -43,21 +43,21 @@ function RSA_reset ( options ) {
     return this;
 }
 
-function RSA_encrypt ( data ) {
+function RSA_RAW_encrypt ( data ) {
     if ( !this.key )
         throw new IllegalStateError("no key is associated with the instance");
 
-    if ( is_string(data) )
+    if ( typeof data === 'string' )
         data = string_to_bytes(data);
 
-    if ( is_buffer(data) )
+    if ( data instanceof ArrayBuffer )
         data = new Uint8Array(data);
 
     var msg;
-    if ( is_bytes(data) ) {
+    if ( data instanceof Uint8Array ) {
         msg = new BigNumber(data);
     }
-    else if ( is_big_number(data) ) {
+    else if ( data instanceof BigNumber ) {
         msg = data;
     }
     else {
@@ -72,24 +72,24 @@ function RSA_encrypt ( data ) {
     return this;
 }
 
-function RSA_decrypt ( data ) {
+function RSA_RAW_decrypt ( data ) {
     if ( !this.key )
         throw new IllegalStateError("no key is associated with the instance");
 
     if ( this.key.length < 3 )
         throw new IllegalStateError("key isn't suitable for decription");
 
-    if ( is_string(data) )
+    if ( typeof data === 'string' )
         data = string_to_bytes(data);
 
-    if ( is_buffer(data) )
+    if ( data instanceof ArrayBuffer )
         data = new Uint8Array(data);
 
     var msg;
-    if ( is_bytes(data) ) {
+    if ( data instanceof Uint8Array ) {
         msg = new BigNumber(data);
     }
-    else if ( is_big_number(data) ) {
+    else if ( data instanceof BigNumber ) {
         msg = data;
     }
     else {
@@ -112,7 +112,7 @@ function RSA_decrypt ( data ) {
             y = q.power( msg, dq );
 
         var t = x.subtract(y);
-        while ( t.sign < 0 ) t = t.add(p);
+        if ( t.sign < 0 ) t = t.add(p);
 
         var h = p.reduce( u.multiply(t) );
 
@@ -128,7 +128,22 @@ function RSA_decrypt ( data ) {
     return this;
 }
 
-var RSA_prototype = RSA.prototype;
-RSA_prototype.reset = RSA_reset;
-RSA_prototype.encrypt = RSA_encrypt;
-RSA_prototype.decrypt = RSA_decrypt;
+
+RSA_RAW.prototype.reset = RSA_RAW_reset;
+RSA_RAW.prototype.encrypt = RSA_RAW_encrypt;
+RSA_RAW.prototype.decrypt = RSA_RAW_decrypt;
+
+exports.RSA_RAW = {
+    encrypt: function ( data, key, m ) {
+        if ( data === undefined ) throw new SyntaxError("data required");
+        if ( key === undefined ) throw new SyntaxError("key required");
+
+        return (new RSA_RAW({ key: key })).encrypt(data).result;
+    },
+    decrypt: function rsa_decrypt_bytes ( data, key ) {
+        if ( data === undefined ) throw new SyntaxError("data required");
+        if ( key === undefined ) throw new SyntaxError("key required");
+
+        return (new RSA_RAW({ key: key })).decrypt(data).result;
+    }
+};
